@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -13,10 +14,13 @@ public class Server {
     private  int port;
     JTextArea jTextArea;
 
-    private List<String> listIP = new ArrayList<>();
+    private Set<Connection> listIP;
 
     public Server(int port) {
         this.port = port;
+        listIP = new CopyOnWriteArraySet<>();
+
+
         JFrame jFrame = new JFrame("Список IP-адресов сервера");
         jFrame.setLayout(new FlowLayout());
         jFrame.setSize(350,200);
@@ -36,11 +40,38 @@ public class Server {
         try (ServerSocket serverSocket = new ServerSocket(port)){
             while (true){
                 Socket socket = serverSocket.accept();
-                listIP.add(socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
-                jTextArea.append(socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
-                jTextArea.append("\n");
-                System.out.println(socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
+                Connection connection = new Connection(socket);
+                connectionCreated(connection);
             }
+        }
+    }
+
+    public void connectionCreated(Connection c){
+        listIP.add(c);
+        showListIP(listIP);
+    }
+
+    public void connectionClosed(Connection c){
+        listIP.remove(c);
+        showListIP(listIP);
+        c.close();
+    }
+
+    public void connectionEception(Connection c, Exception ex){
+
+    }
+
+    public void resivedConnected(){
+
+    }
+
+    public void showListIP(Set<Connection> listIP){
+        jTextArea.selectAll();
+        jTextArea.replaceSelection("");
+        for (Connection list: listIP) {
+            Socket socket = list.getNewSocket();
+            jTextArea.append(socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
+            jTextArea.append("\n");
         }
     }
 
