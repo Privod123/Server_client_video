@@ -1,8 +1,6 @@
 import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamResolution;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 
@@ -22,13 +20,7 @@ public class Connection {
         }
     }
 
-    public void sendVideo(){
-
-        Webcam webcam = Webcam.getDefault();
-        webcam.setViewSize(new Dimension(640, 480)); // устанавливаем размер изображения
-        webcam.setViewSize(WebcamResolution.VGA.getSize()); // устанавливаем разрешение
-        webcam.open();
-
+    public void sendVideo(Webcam webcam){
         //Для отправки данных на сервер
         try (BufferedOutputStream bout = new BufferedOutputStream(out);
              ByteArrayOutputStream byteOut = new ByteArrayOutputStream()){
@@ -42,6 +34,24 @@ public class Connection {
         }  catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public byte[] putVideo(){
+        byte[] rez = null;
+        try ( ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            DataInputStream dis = new DataInputStream(in);
+
+            byte[] buf = new byte[dis.readInt()];
+
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                bos.write(buf, 0, len);
+            }
+            rez = bos.toByteArray();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+        return rez;
     }
 
     public void close(){
