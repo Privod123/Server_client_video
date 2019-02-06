@@ -60,8 +60,8 @@ public class Server {
             public void actionPerformed(ActionEvent e) {
                 for (Connection c: listIP) {
                     String currentIP = c.getNewSocket().getInetAddress().getHostAddress() + ":" + c.getNewSocket().getPort();
-                    if(currentIP.equals(ipBroadcast)){
-                        System.out.println("Запускаем отдельный поток с трансляцией");
+                    if(currentIP.trim().equals(ipBroadcast.trim())){
+                        new Thread(new Translation(c)).start();
                     }
                 }
             }
@@ -88,7 +88,6 @@ public class Server {
     public void connectionCreated(Connection c){
         listIP.add(c);
         showListIP(listIP);
-        new Thread(new Translation(c.putVideo())).start();
     }
 
     public void connectionClosed(Connection c){

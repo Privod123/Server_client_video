@@ -7,32 +7,34 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class Translation implements Runnable {
-    private byte[] inputVideo;
 
-    public Translation(byte[] inputVideo) {
-        this.inputVideo = inputVideo;
+    private Connection connection;
+    private JPanel panel;
+    private JFrame frame;
+
+    public Translation(Connection c) {
+        this.connection = c;
+        frame = new JFrame();
+        frame.setBounds(100, 100, 800, 600);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+
     }
 
     @Override
     public void run() {
-        showTranslation(inputVideo);
-    }
-
-    public void showTranslation(byte[] inpit){
-        JFrame frame = new JFrame();
-        frame.setBounds(100, 100, 400, 400);
-        byte[] bs = inpit;
-        InputStream inputStream = new ByteArrayInputStream(bs);
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
+        while (!connection.getNewSocket().isClosed()){
+            InputStream inputStream = new ByteArrayInputStream(connection.putVideo());
+            BufferedImage image = null;
+            try {
+                image = ImageIO.read(inputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            panel = new ImageBackgroundPanel(image);
+            frame.add(panel);
+            frame.validate();
         }
-        JPanel panel = new ImageBackgroundPanel(image);
-        frame.add(panel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
     }
 }
 

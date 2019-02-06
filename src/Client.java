@@ -8,7 +8,6 @@ import java.net.*;
 
 public class Client {
 
-//    private SocketAddress socketAddress;
     private Connection connection;
 
     public Client(Connection connection) {
@@ -22,8 +21,13 @@ public class Client {
         webcam.setViewSize(WebcamResolution.VGA.getSize()); // устанавливаем разрешение
         webcam.open();
 
-        while (true){
+        while (webcam.isOpen()){
             connection.sendVideo(webcam);
+            if (connection.getNewSocket().isClosed()) {
+                webcam.close();
+                System.out.println("webcam closed");
+                break;
+            }
         }
 
     }
