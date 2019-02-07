@@ -22,21 +22,32 @@ public class Client {
         webcam.open();
 
         while (webcam.isOpen()){
-            connection.sendVideo(webcam);
-            if (connection.getNewSocket().isClosed()) {
+            if (!connection.getNewSocket().isConnected()) {
                 webcam.close();
-                System.out.println("webcam closed");
                 break;
             }
+               connection.sendVideo(webcam);
         }
 
     }
 
-    public static void main(String[] args) throws IOException {
-        Client client = new Client(new Connection(new Socket(
-                                                    Config.getProperti("hostServer"),
-                                                        Integer.parseInt(Config.getProperti("portServer")))));
-
-        client.start();
+    public static void main(String[] args)  {
+        Client client = null;
+        while (true){
+            try {
+                client = new Client(new Connection(new Socket(
+                        Config.getProperti("hostServer"),
+                        Integer.parseInt(Config.getProperti("portServer")))));
+                client.start();
+            } catch (IOException e) {
+                try{
+                    Thread.sleep(5000);
+                }catch (InterruptedException e1){
+                    e1.printStackTrace();
+                }
+                System.out.println("Try connection");
+                continue;
+            }
+        }
     }
 }

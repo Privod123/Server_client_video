@@ -15,7 +15,7 @@ public class Translation implements Runnable {
     public Translation(Connection c) {
         this.connection = c;
         frame = new JFrame();
-        frame.setBounds(100, 100, 800, 600);
+        frame.setBounds(100, 100, 600, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
