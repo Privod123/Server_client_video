@@ -9,15 +9,20 @@ import java.io.InputStream;
 public class Translation implements Runnable {
 
     private Connection connection;
-    private JPanel panel;
+    volatile Image image;
     private JFrame frame;
 
     public Translation(Connection c) {
         this.connection = c;
         frame = new JFrame();
-        frame.setBounds(100, 100, 600, 500);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        frame.setBounds(100, 100, 600, 500);
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        Dimension dimension = toolkit.getScreenSize();
+        frame.setBounds(dimension.width/2 - 300, dimension.height/2 - 240, 600, 480);
+        frame.add(new Component());
 
     }
 
@@ -25,28 +30,24 @@ public class Translation implements Runnable {
     public void run() {
         while (!connection.getNewSocket().isClosed()){
             InputStream inputStream = new ByteArrayInputStream(connection.putVideo());
-            BufferedImage image = null;
+            image = null;
             try {
                 image = ImageIO.read(inputStream);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            panel = new ImageBackgroundPanel(image);
-            frame.add(panel);
-            frame.validate();
+            /* перерисовываем картинку */
+            SwingUtilities.invokeLater(() -> frame.repaint());
+        }
+    }
+
+    class Component extends JComponent{
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D)g;
+            g2.drawImage(image, 0, 0, null);
         }
     }
 }
 
-class ImageBackgroundPanel extends JPanel {
-    BufferedImage image;
-
-    ImageBackgroundPanel(BufferedImage image) {
-        this.image = image;
-    }
-
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        g.drawImage(image, 0, 0, this);
-    }
-}

@@ -12,6 +12,7 @@ public class Client {
 
     public Client(Connection connection) {
         this.connection = connection;
+        System.out.println("Successful Connection");
     }
 
     public void start(){

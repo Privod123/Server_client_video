@@ -43,26 +43,18 @@ public class Server {
         jPanel2.setOpaque(true);
 
         jTextArea = new JTextArea();
-        jTextArea.addCaretListener(new CaretListener() {
-            @Override
-            public void caretUpdate(CaretEvent e) {
-                ipBroadcast = jTextArea.getText();
-            }
-        });
+        jTextArea.addCaretListener((e) -> ipBroadcast = jTextArea.getText());
 
         JScrollPane jScrollPane = new JScrollPane(jTextArea);
         jScrollPane.setPreferredSize(new Dimension(150,150));
 
         JButton jButton = new JButton(" Смотреть трансляцию ");
         jButton.setBorder(BorderFactory.createLineBorder(Color.black));
-        jButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (Connection c: listIP) {
-                    String currentIP = c.getNewSocket().getInetAddress().getHostAddress() + ":" + c.getNewSocket().getPort();
-                    if(currentIP.trim().equals(ipBroadcast.trim())){
-                        new Thread(new Translation(c)).start();
-                    }
+        jButton.addActionListener((e) -> {
+            for (Connection c: listIP) {
+                String currentIP = c.getNewSocket().getInetAddress().getHostAddress() + ":" + c.getNewSocket().getPort();
+                if(currentIP.trim().equals(ipBroadcast.trim())){
+                    new Thread(new Translation(c)).start();
                 }
             }
         });
