@@ -11,10 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class Server {
@@ -23,11 +21,11 @@ public class Server {
     JTextArea jTextArea;
     private String ipBroadcast;
 
-    private Set<Connection> listIP;
+    public static Map<Connection,Boolean> listIP;
 
     public Server(int port) {
         this.port = port;
-        listIP = new CopyOnWriteArraySet<>();
+        listIP = new HashMap<>();
 
 
         JFrame jFrame = new JFrame("Список IP-адресов сервера");
@@ -51,10 +49,15 @@ public class Server {
         JButton jButton = new JButton(" Смотреть трансляцию ");
         jButton.setBorder(BorderFactory.createLineBorder(Color.black));
         jButton.addActionListener((e) -> {
-            for (Connection c: listIP) {
+            for (Map.Entry<Connection,Boolean> list: listIP.entrySet()) {
+                Connection c = list.getKey();
+                boolean airON = list.getValue();
                 String currentIP = c.getNewSocket().getInetAddress().getHostAddress() + ":" + c.getNewSocket().getPort();
-                if(currentIP.trim().equals(ipBroadcast.trim())){
+                if(currentIP.trim().equals(ipBroadcast.trim()) && airON == false){
+                    list.setValue(true);
                     new Thread(new Translation(c)).start();
+                }else {
+                    System.out.println("Video broadcast is alredy underway");
                 }
             }
         });
@@ -78,7 +81,7 @@ public class Server {
     }
 
     public void connectionCreated(Connection c){
-        listIP.add(c);
+        listIP.put(c,false);
         showListIP(listIP);
     }
 
@@ -88,21 +91,21 @@ public class Server {
         c.close();
     }
 
-    public void connectionEception(Connection c, Exception ex){
 
-    }
-
-    public void resivedConnected(){
-
-    }
-
-    public void showListIP(Set<Connection> listIP){
+    public void showListIP(Map<Connection,Boolean> listIP){
         jTextArea.selectAll();
         jTextArea.replaceSelection("");
-        for (Connection list: listIP) {
-            Socket socket = list.getNewSocket();
+        for (Map.Entry<Connection,Boolean> list: listIP.entrySet()) {
+            Socket socket = list.getKey().getNewSocket();
             jTextArea.append(socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
             jTextArea.append("\n");
+        }
+    }
+
+    public static void getAirOn (Connection transletion){
+        for (Map.Entry<Connection,Boolean> list: listIP.entrySet()) {
+            Connection c = list.getKey();
+            if (c.equals(transletion)) list.setValue(false);
         }
     }
 

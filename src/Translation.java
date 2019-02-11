@@ -1,6 +1,9 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -15,8 +18,6 @@ public class Translation implements Runnable {
     public Translation(Connection c) {
         this.connection = c;
         frame = new JFrame();
-//        frame.setBounds(100, 100, 600, 500);
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
         Toolkit toolkit = Toolkit.getDefaultToolkit();

@@ -22,9 +22,9 @@ public class Connection {
         }
     }
 
-    public void sendVideo(Webcam webcam){
+    public void sendVideo(Webcam webcam) {
         //Для отправки данных на сервер
-        try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream()){
+        try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream()) {
 
             ImageIO.write(webcam.getImage(), "JPEG", byteOut);
 
@@ -32,10 +32,10 @@ public class Connection {
             dout.writeInt(byteOut.size());
             dout.flush();
             bout.write(byteOut.toByteArray());
-        }  catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
+            }
         }
-    }
 
     public byte[] putVideo(){
         DataInputStream dis = new DataInputStream(in);
@@ -77,5 +77,15 @@ public class Connection {
 
     public Socket getNewSocket() {
         return newSocket;
+    }
+
+    @Override
+    public String toString() {
+        return "Connection{" +
+                "newSocket=" + newSocket +
+                ", in=" + in +
+                ", out=" + out +
+                ", bout=" + bout +
+                '}';
     }
 }
